@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public enum UserErrorCode implements BaseErrorCode {
 
-    USER_NOT_FOUND("USR-001", "User not found", HttpStatus.NOT_FOUND),
+    USER_NOT_FOUND("USR-001", "Usuario no encontrado", HttpStatus.NOT_FOUND),
     EMAIL_ALREADY_EXISTS("USR-002", "El correo ya se encuentra registrado", HttpStatus.CONFLICT);
 
     private final String code;
