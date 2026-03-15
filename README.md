@@ -153,28 +153,6 @@ Autentica un usuario existente y retorna un nuevo token.
 
 ---
 
-## Diagramas
-
-### Diagrama ER
-
-Muestra las tablas de la base de datos y sus relaciones.
-
-![ER Diagram](diagrams/er-diagram.puml)
-
-### Diagrama de Componentes
-
-Muestra la interacción entre los features `auth`, `user` y la capa `common`.
-
-![Component Diagram](diagrams/component-diagram.puml)
-
-### Diagrama de Flujo
-
-Muestra el flujo completo de las operaciones `signup` y `login`.
-
-![Flow Diagram](diagrams/flow-diagram.puml)
-
----
-
 ## Cómo ejecutar
 
 ```bash
