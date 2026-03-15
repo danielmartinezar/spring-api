@@ -2,6 +2,7 @@ package ey.daniel.spring_test.auth;
 
 import ey.daniel.spring_test.common.exception.AppException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import ey.daniel.spring_test.config.JwtUtil;
 import ey.daniel.spring_test.user.UserDto;
@@ -10,8 +11,6 @@ import ey.daniel.spring_test.user.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 public class AuthService {
@@ -51,8 +50,7 @@ public class AuthService {
         UserEntity user = userService.createUser(toCreateUserRequest(dto));
 
         String token = jwtUtil.generateToken(user.getId());
-        LocalDateTime now = LocalDateTime.now();
-        authRepository.save(AuthEntity.builder()
+        AuthEntity auth = authRepository.save(AuthEntity.builder()
             .user(user)
             .token(token)
             .build());
@@ -61,7 +59,7 @@ public class AuthService {
             user.getId(),
             user.getCreatedAt(),
             user.getModifiedAt(),
-            now,
+            auth.getLastLogin(),
             token,
             user.isActive()
         );
@@ -77,17 +75,11 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(user.getId());
 
-        AuthEntity auth = authRepository.findByUserId(user.getId())
-            .map(existing -> {
-                existing.setToken(token);
-                return existing;
-            })
-            .orElse(AuthEntity.builder()
-                .user(user)
-                .token(token)
-                .build());
-        authRepository.save(auth);
+        AuthEntity auth = Optional.ofNullable(user.getAuth())
+            .orElseThrow(() -> new AppException(AuthErrorCode.INVALID_CREDENTIALS));
+        auth.setToken(token);
+        AuthEntity saved = authRepository.save(auth);
 
-        return new AuthDto.LoginResponse(user.getId(), user.getCreatedAt(), user.getModifiedAt(), auth.getLastLogin(), token, user.isActive());
+        return new AuthDto.LoginResponse(user.getId(), user.getCreatedAt(), user.getModifiedAt(), saved.getLastLogin(), token, user.isActive());
     }
 }

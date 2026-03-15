@@ -1,5 +1,6 @@
 package ey.daniel.spring_test.user;
 
+import ey.daniel.spring_test.auth.AuthEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,6 +55,9 @@ public class UserEntity {
     protected void onUpdate() {
         this.modifiedAt = LocalDateTime.now();
     }
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private AuthEntity auth;
 
     @Builder.Default
     @ElementCollection

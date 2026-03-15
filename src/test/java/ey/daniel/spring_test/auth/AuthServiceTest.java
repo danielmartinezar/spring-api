@@ -62,6 +62,10 @@ class AuthServiceTest {
     }
 
     private UserEntity savedUser() {
+        AuthEntity auth = new AuthEntity();
+        auth.setToken("old-token");
+        auth.setLastLogin(LocalDateTime.now());
+
         UserEntity user = new UserEntity();
         user.setId(UUID.randomUUID());
         user.setEmail("juan@rodriguez.org");
@@ -69,6 +73,7 @@ class AuthServiceTest {
         user.setCreatedAt(LocalDateTime.now());
         user.setModifiedAt(LocalDateTime.now());
         user.setActive(true);
+        user.setAuth(auth);
         return user;
     }
 
@@ -132,8 +137,7 @@ class AuthServiceTest {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(jwtUtil.generateToken(any())).thenReturn("jwt-token");
-        when(authRepository.findByUserId(any())).thenReturn(Optional.empty());
-        when(authRepository.save(any())).thenReturn(new AuthEntity());
+        when(authRepository.save(any())).thenReturn(user.getAuth());
 
         AuthDto.LoginRequest req = new AuthDto.LoginRequest();
         req.setEmail("juan@rodriguez.org");
