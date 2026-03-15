@@ -1,0 +1,49 @@
+@startuml ER Diagram
+
+skinparam backgroundColor #F9FAFB
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #6366F1
+skinparam classArrowColor #6366F1
+skinparam classFontColor #1F2937
+skinparam classFontSize 13
+skinparam classFontStyle bold
+skinparam classAttributeFontColor #374151
+skinparam classAttributeFontSize 12
+skinparam shadowing true
+skinparam linetype ortho
+skinparam roundcorner 8
+
+hide circle
+hide methods
+
+entity "app_user" as user #EEF2FF|FFFFFF {
+    * <color:#6366F1><b>id</b></color> : UUID  <color:#9CA3AF><<PK>></color>
+    ==
+    name : VARCHAR(255)
+    email : VARCHAR(255)  <color:#9CA3AF><<UNIQUE>></color>
+    password : VARCHAR(255)
+    is_active : BOOLEAN
+    created_at : TIMESTAMP
+    modified_at : TIMESTAMP
+}
+
+entity "auth" as auth #EEF2FF|FFFFFF {
+    * <color:#6366F1><b>id</b></color> : UUID  <color:#9CA3AF><<PK>></color>
+    ==
+    user_id : UUID  <color:#9CA3AF><<FK, UNIQUE>></color>
+    token : VARCHAR(512)
+    last_login : TIMESTAMP
+}
+
+entity "phone" as phone #EEF2FF|FFFFFF {
+    ==
+    user_id : UUID  <color:#9CA3AF><<FK>></color>
+    number : VARCHAR(50)
+    city_code : VARCHAR(10)
+    country_code : VARCHAR(10)
+}
+
+user ||--|| auth : ""
+user ||--o{ phone : ""
+
+@enduml

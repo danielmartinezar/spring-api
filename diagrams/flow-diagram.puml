@@ -1,0 +1,45 @@
+@startuml Flow Diagram
+
+skinparam backgroundColor #F9FAFB
+skinparam sequenceArrowColor #6366F1
+skinparam sequenceParticipantBackgroundColor #FFFFFF
+skinparam sequenceParticipantBorderColor #6366F1
+skinparam sequenceParticipantFontColor #1F2937
+skinparam sequenceParticipantFontStyle bold
+skinparam sequenceLifeLineBorderColor #6366F1
+skinparam sequenceGroupBackgroundColor #EEF2FF
+skinparam sequenceGroupBorderColor #6366F1
+skinparam sequenceGroupFontColor #6366F1
+skinparam shadowing false
+
+actor Client
+
+== POST /auth/signup ==
+
+Client -> AuthController : SignupRequest
+AuthController -> AuthService : signup(dto)
+AuthService -> AuthService : hashPassword(password)
+AuthService -> UserService : createUser(dto)
+UserService -> UserRepository : save(user)
+UserRepository --> AuthService : UserEntity
+AuthService -> AuthRepository : saveCredentials(auth + token)
+AuthService -> JwtUtil : generateToken(userId)
+JwtUtil --> AuthService : JWT
+AuthService --> AuthController : SignupResponse
+AuthController --> Client : 201 ApiResponse
+
+== POST /auth/login ==
+
+Client -> AuthController : LoginRequest
+AuthController -> AuthService : login(dto)
+AuthService -> UserService : findByEmail(email)
+UserService -> UserRepository : findByEmail(email)
+UserRepository --> AuthService : UserEntity
+AuthService -> AuthService : passwordEncoder.matches()
+AuthService -> JwtUtil : generateToken(userId)
+JwtUtil --> AuthService : JWT
+AuthService -> AuthRepository : saveSession(new token)
+AuthService --> AuthController : LoginResponse
+AuthController --> Client : 200 ApiResponse
+
+@enduml

@@ -1,0 +1,52 @@
+@startuml Component Diagram
+
+skinparam backgroundColor #F9FAFB
+skinparam componentBackgroundColor #FFFFFF
+skinparam componentBorderColor #6366F1
+skinparam componentFontColor #1F2937
+skinparam componentFontSize 13
+skinparam componentFontStyle bold
+skinparam arrowColor #6366F1
+skinparam packageBackgroundColor #EEF2FF
+skinparam packageBorderColor #6366F1
+skinparam packageFontColor #6366F1
+skinparam packageFontSize 13
+skinparam packageFontStyle bold
+skinparam databaseBackgroundColor #FFFFFF
+skinparam databaseBorderColor #6366F1
+skinparam databaseFontColor #1F2937
+skinparam shadowing false
+skinparam roundcorner 8
+
+package "auth" {
+    [AuthController]
+    [AuthService]
+    [AuthRepository]
+}
+
+package "user" {
+    [UserService]
+    [UserRepository]
+}
+
+package "common" {
+    [AppException]
+    [ApiResponse]
+    [GlobalExceptionHandler]
+}
+
+database "H2 (in-memory)" as H2
+
+[AuthController] --> [AuthService]
+[AuthService] --> [AuthRepository]
+[AuthService] ..> [UserService] : uses
+[UserService] --> [UserRepository]
+[UserRepository] --> H2
+[AuthRepository] --> H2
+
+[AuthService] ..> [AppException] : throws
+[UserService] ..> [AppException] : throws
+[AuthController] ..> [ApiResponse] : returns
+[GlobalExceptionHandler] ..> [ApiResponse] : wraps
+
+@enduml
